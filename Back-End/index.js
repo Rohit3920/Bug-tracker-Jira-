@@ -1,26 +1,14 @@
+const express = require('express');
+const app = express();
+const dotenv = require("dotenv");
+const PORT = 5000;
 
-const app = require('express')();
+//database connection
+require('./db/Config');
+dotenv.config();
+app.use(express.json());
+
 const http = require('http').Server(app);
-const mongoose = require('mongoose');
-const PORT =  5000;
-mongoose.connect("mongodb+srv://rohitnittawadekar07:cJT9JAPsfANsfHcR@bug-tracker.qeeiwpy.mongodb.net/?retryWrites=true&w=majority&appName=bug-tracker")
-
-// sample mmodel 
-require('./models/userModel');
-
-async function insetUser() {
-    const User = require('./models/userModel');
-    const user = new User({
-        name: 'Rohit Nittawadekar',
-        email: 'rohit@example.com',
-        password: 'password123',
-        role: 'user',
-    });
-    await user.save();
-}
-insetUser().then(() => {
-    console.log('User inserted successfully');
-});
 
 
 http.listen(PORT, () => {
@@ -29,6 +17,25 @@ http.listen(PORT, () => {
 
 
 //First route
+
+app.get('/api/user', async (req, res) => {
+    try {
+        const User = require('./models/userModel'); // Import the User model here
+        const newUser = new User({
+            username: "demo1",
+            email: "demo1@gmail.com",
+            password: "12345678",
+            role: "user",
+        });
+
+        const user = await newUser.save();
+        res.status(200).json(user);
+        console.log("user created successfully");
+    } catch (err) {
+        console.log("some error occur");
+        res.status(500).json(err);
+    }
+});
 app.get('/', (req, res) => {
     res.send('API is running...');
 });
