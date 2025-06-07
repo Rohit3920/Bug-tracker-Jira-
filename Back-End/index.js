@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 const PORT = process.env.PORT || 5000;
 const User = require('./models/userModel');
+const Project = require('./models/projectModel');
 require("dotenv").config();
 //database connection
 require('./db/Config');
@@ -48,6 +49,97 @@ app.post('/login', async (req, res) => {
     } catch (error) {
         console.log("some login user error");
         res.status(500).json(error);
+    }
+});
+
+// project APIS routes
+// create project
+app.post('/project/', (req, res) => {
+    try {
+        Project.create(req.body)
+        .then(project => res.status(201).json(project))
+        .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+//read all project
+app.get('/project/', (req, res) => {
+    try {
+        Project.find()
+        .then(projects => res.status(200).json(projects))
+        .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+// read only one project
+app.get('/project/:id', (req, res) => {
+    try {
+        Project.findById(req.params.id)
+        .then(project => {
+            if (!project) {
+                return res.status(404).json({ message: "Project not found" });
+            }
+            res.status(200).json(project);
+        })
+        .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+// update project
+app.put('/project/:id', (req, res) => {
+    try {
+        Project.findByIdAndUpdate(req.params.id, req.body, { new: true })
+        .then(project => {
+            if (!project) {
+                return res.status(404).json({ message: "Project not found" });
+            }
+            res.status(200).json(project);
+        })
+        .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+//updata team members array in project
+app.put('/project/:id/team', (req, res) => {
+    try {
+        Project.findByIdAndUpdate(
+            req.params.id,
+            { $addToSet: { teamMembers: req.body.teamMemberId } },
+            { new: true }
+        )
+        .then(project => {
+            if (!project) {
+                return res.status(404).json({ message: "Project not found" });
+            }
+            res.status(200).json(project);
+        })
+        .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+// delete project
+app.delete("/project/:id", (req, res) => {
+    try {
+        Project.findByIdAndDelete(req.params.id)
+        .then(project => {
+            if (!project) {
+                return res.status(404).json({ message: "Project not found" });
+            }
+            res.status(200).json({ message: "Project deleted successfully" });
+        })
+        .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
     }
 });
 
