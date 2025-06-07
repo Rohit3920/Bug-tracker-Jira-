@@ -1,41 +1,56 @@
 const express = require('express');
 const app = express();
-const dotenv = require("dotenv");
-const PORT = 5000;
-
+const cors = require('cors');
+const PORT = process.env.PORT || 5000;
+const User = require('./models/userModel');
+require("dotenv").config();
 //database connection
 require('./db/Config');
-dotenv.config();
-app.use(express.json());
+//json web token
+const Jwt = require('jsonwebtoken');
+const jwtKey = process.env.JWT_SECRET_KEY;
 
+//cors configuration
+var corsOptions = {
+    origin: "http://localhost:5173"
+};
+app.use(cors(corsOptions));
+app.use(express.json());
 const http = require('http').Server(app);
 
-
-http.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
-
-
-//First route
-
-app.get('/api/user', async (req, res) => {
+// --------------------------API ROUTES--------------------------
+// create register route
+app.post('/register', (req, res) => {
     try {
-        const User = require('./models/userModel'); // Import the User model here
-        const newUser = new User({
-            username: "demo1",
-            email: "demo1@gmail.com",
-            password: "12345678",
-            role: "user",
-        });
-
-        const user = await newUser.save();
-        res.status(200).json(user);
-        console.log("user created successfully");
+        User.create(req.body)
+        .then(user =>  res.status(201).json(user))
+        .catch(err => res.status(400).json({ error: err.message }));
     } catch (err) {
-        console.log("some error occur");
+        console.log("some register user error");
         res.status(500).json(err);
     }
 });
-app.get('/', (req, res) => {
-    res.send('API is running...');
+
+// create login route
+app.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+        const token = Jwt.sign({ id: user._id }, jwtKey, { expiresIn: '2h' });
+        res.status(200).json({ token, user });
+    } catch (error) {
+        console.log("some login user error");
+        res.status(500).json(error);
+    }
+});
+
+http.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
