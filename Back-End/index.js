@@ -107,7 +107,7 @@ app.put('/project/:id', (req, res) => {
     }
 });
 
-//updata team members array in project
+//update team members array in project
 app.put('/project/:id/team', (req, res) => {
     try {
         Project.findByIdAndUpdate(
@@ -126,6 +126,26 @@ app.put('/project/:id/team', (req, res) => {
         res.status(400).send(error);
     }
 });
+
+//Delete team members in teamMember array
+app.put('/project/:id/team/remove', (req, res) => {
+    try {
+        Project.findByIdAndUpdate(
+            req.params.id,
+            { $pull: { teamMembers: req.body.teamMemberId } },
+            { new: true }
+        )
+        .then(project => {
+            if (!project) {
+                return res.status(404).json({ message: "Project not found" });
+            }
+            res.status(200).json(project);
+        })
+        .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+})
 
 // delete project
 app.delete("/project/:id", (req, res) => {
