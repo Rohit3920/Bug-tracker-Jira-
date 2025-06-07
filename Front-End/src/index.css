@@ -33,6 +33,19 @@ body {
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: 2.8em;
   line-height: 1.1;
+}
+
+body{
+  background-image : url("./assets/bg-jira.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  opacity: 0.9 ;
+}
+
+#login, #signup{
+  background-blend-mode: overlay;
 }
