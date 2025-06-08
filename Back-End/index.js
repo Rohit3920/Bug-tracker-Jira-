@@ -4,6 +4,7 @@ const cors = require('cors');
 const PORT = process.env.PORT || 5000;
 const User = require('./models/userModel');
 const Project = require('./models/projectModel');
+const Ticket = require('./models/ticketModel');
 require("dotenv").config();
 //database connection
 require('./db/Config');
@@ -24,8 +25,8 @@ const http = require('http').Server(app);
 app.post('/register', (req, res) => {
     try {
         User.create(req.body)
-        .then(user =>  res.status(201).json(user))
-        .catch(err => res.status(400).json({ error: err.message }));
+            .then(user => res.status(201).json(user))
+            .catch(err => res.status(400).json({ error: err.message }));
     } catch (err) {
         console.log("some register user error");
         res.status(500).json(err);
@@ -57,8 +58,8 @@ app.post('/login', async (req, res) => {
 app.post('/project/', (req, res) => {
     try {
         Project.create(req.body)
-        .then(project => res.status(201).json(project))
-        .catch(err => res.status(400).json({ error: err.message }));
+            .then(project => res.status(201).json(project))
+            .catch(err => res.status(400).json({ error: err.message }));
     } catch (error) {
         res.status(400).send(error);
     }
@@ -68,8 +69,8 @@ app.post('/project/', (req, res) => {
 app.get('/project/', (req, res) => {
     try {
         Project.find()
-        .then(projects => res.status(200).json(projects))
-        .catch(err => res.status(400).json({ error: err.message }));
+            .then(projects => res.status(200).json(projects))
+            .catch(err => res.status(400).json({ error: err.message }));
     } catch (error) {
         res.status(400).send(error);
     }
@@ -79,13 +80,13 @@ app.get('/project/', (req, res) => {
 app.get('/project/:id', (req, res) => {
     try {
         Project.findById(req.params.id)
-        .then(project => {
-            if (!project) {
-                return res.status(404).json({ message: "Project not found" });
-            }
-            res.status(200).json(project);
-        })
-        .catch(err => res.status(400).json({ error: err.message }));
+            .then(project => {
+                if (!project) {
+                    return res.status(404).json({ message: "Project not found" });
+                }
+                res.status(200).json(project);
+            })
+            .catch(err => res.status(400).json({ error: err.message }));
     } catch (error) {
         res.status(400).send(error);
     }
@@ -95,13 +96,13 @@ app.get('/project/:id', (req, res) => {
 app.put('/project/:id', (req, res) => {
     try {
         Project.findByIdAndUpdate(req.params.id, req.body, { new: true })
-        .then(project => {
-            if (!project) {
-                return res.status(404).json({ message: "Project not found" });
-            }
-            res.status(200).json(project);
-        })
-        .catch(err => res.status(400).json({ error: err.message }));
+            .then(project => {
+                if (!project) {
+                    return res.status(404).json({ message: "Project not found" });
+                }
+                res.status(200).json(project);
+            })
+            .catch(err => res.status(400).json({ error: err.message }));
     } catch (error) {
         res.status(400).send(error);
     }
@@ -115,13 +116,13 @@ app.put('/project/:id/team', (req, res) => {
             { $addToSet: { teamMembers: req.body.teamMemberId } },
             { new: true }
         )
-        .then(project => {
-            if (!project) {
-                return res.status(404).json({ message: "Project not found" });
-            }
-            res.status(200).json(project);
-        })
-        .catch(err => res.status(400).json({ error: err.message }));
+            .then(project => {
+                if (!project) {
+                    return res.status(404).json({ message: "Project not found" });
+                }
+                res.status(200).json(project);
+            })
+            .catch(err => res.status(400).json({ error: err.message }));
     } catch (error) {
         res.status(400).send(error);
     }
@@ -135,13 +136,13 @@ app.put('/project/:id/team/remove', (req, res) => {
             { $pull: { teamMembers: req.body.teamMemberId } },
             { new: true }
         )
-        .then(project => {
-            if (!project) {
-                return res.status(404).json({ message: "Project not found" });
-            }
-            res.status(200).json(project);
-        })
-        .catch(err => res.status(400).json({ error: err.message }));
+            .then(project => {
+                if (!project) {
+                    return res.status(404).json({ message: "Project not found" });
+                }
+                res.status(200).json(project);
+            })
+            .catch(err => res.status(400).json({ error: err.message }));
     } catch (error) {
         res.status(400).send(error);
     }
@@ -151,17 +152,93 @@ app.put('/project/:id/team/remove', (req, res) => {
 app.delete("/project/:id", (req, res) => {
     try {
         Project.findByIdAndDelete(req.params.id)
-        .then(project => {
-            if (!project) {
-                return res.status(404).json({ message: "Project not found" });
-            }
-            res.status(200).json({ message: "Project deleted successfully" });
-        })
-        .catch(err => res.status(400).json({ error: err.message }));
+            .then(project => {
+                if (!project) {
+                    return res.status(404).json({ message: "Project not found" });
+                }
+                res.status(200).json({ message: "Project deleted successfully" });
+            })
+            .catch(err => res.status(400).json({ error: err.message }));
     } catch (error) {
         res.status(400).send(error);
     }
 });
+
+// ticket APIS routes
+//create ticket
+app.post('/ticket/', (req, res) => {
+    try {
+        Ticket.create(req.body)
+            .then(ticket => res.status(201).json(ticket))
+            .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+//read all tickets by project id
+app.get('/ticket/:projectId', (req, res) => {
+    try {
+        Ticket.find({ projectId: req.params.projectId })
+            .then(tickets => res.status(200).json(tickets))
+            .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+//update ticket
+app.put('/ticket/:id', (req, res) => {
+    try {
+        Ticket.findByIdAndUpdate(req.params.id, req.body, { new: true })
+            .then(ticket => {
+                if (!ticket) {
+                    return res.status(404).json({ message: "Ticket not found" });
+                }
+                res.status(200).json(ticket);
+            })
+            .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+//delete ticket
+app.delete('/ticket/:id', (req, res) => {
+    try {
+        Ticket.findByIdAndDelete(req.params.id)
+            .then(ticket => {
+                if (!ticket) {
+                    return res.status(404).json({ message: "Ticket not found" });
+                }
+                res.status(200).json({ message: "Ticket deleted successfully" });
+            })
+            .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+//assign ticket to user
+app.put('/ticket/:id/assign', (req, res) => {
+    try {
+        Ticket.findByIdAndUpdate(
+            req.params.id,
+            { assignee: req.body.assigneeId },
+            { new: true }
+        )
+            .then(ticket => {
+                if (!ticket) {
+                    return res.status(404).json({ message: "Ticket not found" });
+                }
+                res.status(200).json(ticket);
+            })
+            .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
 
 http.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
