@@ -32,7 +32,8 @@ function SignUp() {
     }
 
     return (
-        <div id='signup' className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
+        <section  id='signup'>
+        <div className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
             <form onSubmit={registerUser}>
                 <h1 className='text-sky-950 mb-4'>Register User</h1>
 
@@ -83,6 +84,7 @@ function SignUp() {
                 <Link to="/login" className="text-blue-500 hover:underline"> login</Link>
             </p>
         </div>
+        </section>
     )
 }
 
