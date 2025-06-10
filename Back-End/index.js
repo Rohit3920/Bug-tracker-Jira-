@@ -5,6 +5,8 @@ const PORT = process.env.PORT || 5000;
 const User = require('./models/userModel');
 const Project = require('./models/projectModel');
 const Ticket = require('./models/ticketModel');
+const authToken = require('./middleware/authToken');
+
 require("dotenv").config();
 //database connection
 require('./db/Config');
@@ -45,7 +47,7 @@ app.post('/login', async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
-        const token = Jwt.sign({ id: user._id }, jwtKey, { expiresIn: '2h' });
+        const token = Jwt.sign({user}, jwtKey, { expiresIn: '2h' });
         res.status(200).json({ token, user });
     } catch (error) {
         console.log("some login user error");
@@ -166,9 +168,9 @@ app.delete("/project/:id", (req, res) => {
 
 // ticket APIS routes
 //create ticket
-app.post('/ticket/', (req, res) => {
+app.post('/ticket/', authToken, (req, res) => {
     try {
-        Ticket.create(req.body)
+        Ticket.create(req.body.data)
             .then(ticket => res.status(201).json(ticket))
             .catch(err => res.status(400).json({ error: err.message }));
     } catch (error) {

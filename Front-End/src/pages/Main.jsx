@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import TicketContent from '../component/TicketContent.jsx'
 
 function Main() {
 
@@ -10,6 +11,8 @@ function Main() {
             <Link to="/project" className="text-blue-500 hover:underline">Projects</Link>
             <br />
             <Link to="/signup" className="text-blue-500 hover:underline">Sign Up</Link>
+            <TicketContent />
+            <br />
         </div>
     )
 }
