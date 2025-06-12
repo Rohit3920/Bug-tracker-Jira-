@@ -1,8 +1,17 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import TicketContent from '../component/TicketContent.jsx'
+import { Link, useNavigate } from 'react-router-dom'
+import TicketForm from '../component/TicketForm'
+import TicketList from './TicketList.jsx'
 
 function Main() {
+
+    const auth = localStorage.getItem("User");
+
+    const navigate = useNavigate();
+    const logout = () => {
+        localStorage.clear();
+        navigate("/signup")
+    }
 
     return (
         <div>
@@ -11,7 +20,12 @@ function Main() {
             <Link to="/project" className="text-blue-500 hover:underline">Projects</Link>
             <br />
             <Link to="/signup" className="text-blue-500 hover:underline">Sign Up</Link>
-            <TicketContent />
+            <br />
+            <Link to="/signup" className="text-blue-500 hover:underline"><span className='user-login'>{JSON.parse(auth).email}</span> <small className='logout-btn' onClick={logout} >(Logout)</small></Link>
+
+            <TicketForm />
+            <br />
+            <TicketList />
             <br />
         </div>
     )

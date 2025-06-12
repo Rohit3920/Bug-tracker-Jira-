@@ -4,6 +4,9 @@ import Login from './pages/Login'
 import SignUp from './pages/SignUp'
 import Main from './pages/Main'
 import ProjectList from './pages/ProjectList'
+import TicketList from './pages/TicketList'
+import ProtectRoute from './ProtectRoute'
+import TicketDetailPage from './pages/TicketDetailPage'
 
 function App() {
 
@@ -11,10 +14,15 @@ function App() {
     <div className="App">
       <Router>
         <Routes>
-          <Route path='/' element={<Main />} />
+          <Route element={<ProtectRoute />}>
+            <Route path='/' element={<Main />} />
+            <Route path='/project' element={<ProjectList />} />
+            <Route path='/ticket/:projectId' element={<TicketList />} />
+            <Route path='/ticket/ticketDetail/' element = {<TicketDetailPage />} />
+          </Route>
+
           <Route path='/signup' element={<SignUp />} />
           <Route path="/login" element={<Login />} />
-          <Route path='/project' element={<ProjectList/>} />
         </Routes>
       </Router>
     </div>
