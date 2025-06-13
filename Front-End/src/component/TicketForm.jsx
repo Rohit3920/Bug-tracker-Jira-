@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios'
+import ProjectSelector from './ProjectSelector';
+import { ProjectData } from '../getData/ProjectData';
 
 const TicketForm = () => {
     const [title, setTitle] = useState("");
     const [desc, setDesc] = useState("");
     const [priority, setPriority] = useState("medium");
-    const [assignee, setAssign] = useState([]);
+    const [assignee, setAssign] = useState(["6843cb5390b184e9813d8c2c"]);
     // const [status, setStatus] = useState("open");
     const [project, setProject] = useState("");
+
+    // used for select project
+    const [projects, setProjects] = useState([]);
 
     const formData = {
         title: title,
@@ -19,21 +24,19 @@ const TicketForm = () => {
         createdAt: new Date(),
     };
 
-    // const handleAssigneeChange = (event) => {
-    //     const selectedOptions = Array.from(event.target.options)
-    //         .filter(option => option.selected)
-    //         .map(option => option.value);
-    //     setAssign(selectedOptions);
-    // };
+    useEffect(() => {
+        ProjectData()
+            .then((response) => {
+                setProjects(response);
+            }).catch((err) => {
+                console.error('Error fetching projects:', err);
+            });
+    }, []);
 
-    // // demy data 
-    // const teamMembers = [
-    //     { id: '1', name: 'John Doe' },
-    //     { id: '2', name: 'Jane Smith' },
-    //     { id: '3', name: 'Peter Jones' },
-    //     { id: '4', name: 'Alice Brown' },
-    //     { id: '5', name: 'Bob White' },
-    // ];
+    const handleChange = (event) => {
+        const newProjectId = event.target.value;
+        setProject(newProjectId);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -51,8 +54,8 @@ const TicketForm = () => {
             description: desc,
             priority,
             status: "open",
-            assignee: "6843cb5390b184e9813d8c2c",
-            projectId: "68450db4263e8c3b2c840f9a"
+            assignee,
+            projectId: project
         }
 
         axios.post('http://localhost:5000/ticket/', { data, headers })
@@ -128,16 +131,27 @@ const TicketForm = () => {
 
                 <div className="form-group">
                     <label className='flex text-sm/6 font-medium text-gray-900 pt-4' htmlFor="project">Project/Module:</label>
-                    <select
-                        className="block w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-800 appearance-none cursor-pointer transition-all duration-300 ease-in-out hover:border-blue-400 shadow-sm"
+                    <div
+                        className="block w-full p-3 borderrounded-lg  bg-white text-gray-800 appearance-none cursor-pointer transition-all duration-300 ease-in-out hover:border-blue-400 shadow-sm"
                         id="project"
                         name="project"
                         onChange={e => setProject(e.target.value)}
                     >
-                        <option value="" className='text-gray-400'>Select Project</option>
-                        <option value="abc">ABC</option>
-                        <option value="xyz">XYZ</option>
-                    </select>
+
+                        <select
+                            id="project-select"
+                            className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            value={project}
+                            onChange={handleChange}
+                        >
+                            <option value="">-- Choose a project --</option>
+                            {projects.map((project) => (
+                                <option key={project._id} value={project._id}>
+                                    {project.title}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
                 <button type="submit" className="flex w-full justify-center rounded-md bg-orange-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Create Ticket</button>

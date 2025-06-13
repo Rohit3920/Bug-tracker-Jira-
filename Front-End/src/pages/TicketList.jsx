@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import TicketUI from "../component/TicketUI";
+import { TicketDataByProjectId } from "../getData/TicketData";
 import { useParams } from "react-router-dom";
-import axios from 'axios';
+
 function TicketList() {
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -14,23 +15,13 @@ function TicketList() {
         setError(null);
 
         try {
-            if (!currentProjectId) {
-                setError("No project ID found in URL.");
-                setLoading(false);
-                return;
-            }
-
-            const apiUrl = `http://localhost:5000/ticket/${currentProjectId}`;
-            const result = await axios.get(apiUrl);
-            setTickets(result.data);
-
-            if (Array.isArray(result.data)) {
-                setTickets(result.data);
-            } else {
-                setTickets([]);
-                setError('Received unexpected data format from server. Expected an array of tickets.');
-            }
-
+            await TicketDataByProjectId(currentProjectId).then(response => {
+                console.log('TicketDataByProjectId response:', response);
+                setTickets(response);
+            }).catch(err => {
+                console.error('Error in TicketDataByProjectId:', err);
+                setError('Failed to load tickets. Please ensure your backend server is running.');
+            });
         } catch (err) {
             console.error('Error fetching tickets:', err);
             let errorMessage = 'Failed to load tickets.';
@@ -68,7 +59,7 @@ function TicketList() {
                         <p className="text-center text-gray-600 col-span-full">Loading tickets...</p>
                     ) : error ? (
                         <p className="text-center text-red-600 col-span-full">Error: {error}</p>
-                    ) : tickets.length > 0 ? (
+                    ) : tickets ? (
                         tickets.map((data) => (
                             <TicketUI data={data} key={data._id} />
                         ))

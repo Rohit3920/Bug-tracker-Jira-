@@ -53,6 +53,13 @@ function TicketDetail({ ticket }) {
                     </span>
                 </div>
 
+                <div className="flex items-center">
+                    <span className="font-semibold text-gray-600 w-20">Created:</span>
+                    <span className="text-gray-700">
+                        {ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString() : 'N/A'}
+                    </span>
+                </div>
+
                 <div className="flex items-start col-span-full sm:col-span-1">
                     <span className="font-semibold text-gray-600 w-20">Assignee(s):</span>
                     <div className="flex flex-wrap gap-1">
@@ -68,65 +75,9 @@ function TicketDetail({ ticket }) {
                     </div>
                 </div>
 
-                <div className="flex items-center">
-                    <span className="font-semibold text-gray-600 w-20">Created:</span>
-                    <span className="text-gray-700">
-                        {ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString() : 'N/A'}
-                    </span>
-                </div>
             </div>
         </div>
     );
 }
 
 export default TicketDetail;
-
-// Example Usage (e.g., in App.js or a parent component)
-/*
-import React from 'react';
-import TicketDetail from './TicketDetail'; // Assuming you save the above as TicketDetail.js
-
-function App() {
-  const exampleTicket = {
-    id: 'TKT-001',
-    title: 'Implement User Login Feature',
-    description: 'As a user, I want to be able to log in to the application securely using my credentials.',
-    priority: 'High',
-    status: 'In Progress',
-    assignees: ['Alice Johnson', 'Bob Williams'],
-    createdAt: '2023-05-10T10:00:00Z',
-  };
-
-  const anotherTicket = {
-    id: 'TKT-002',
-    title: 'Bug: Dashboard Chart Not Rendering',
-    description: 'The main dashboard chart is not displaying data for some users, showing an error message instead.',
-    priority: 'Medium',
-    status: 'To Do',
-    assignees: [],
-    createdAt: '2023-06-01T14:30:00Z',
-  };
-
-  const completedTicket = {
-    id: 'TKT-003',
-    title: 'Update User Profile UI',
-    description: 'Redesign the user profile page to match the new design system guidelines.',
-    priority: 'Low',
-    status: 'Done',
-    assignees: ['Eve Brown'],
-    createdAt: '2023-04-15T09:00:00Z',
-  };
-
-
-  return (
-    <div className="min-h-screen bg-gray-100 p-8 flex flex-col items-center space-y-6">
-      <h1 className="text-4xl font-extrabold text-gray-900 mb-8">Ticket Details</h1>
-      <TicketDetail ticket={exampleTicket} />
-      <TicketDetail ticket={anotherTicket} />
-      <TicketDetail ticket={completedTicket} />
-    </div>
-  );
-}
-
-export default App;
-*/

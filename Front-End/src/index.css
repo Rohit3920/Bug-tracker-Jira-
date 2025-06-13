@@ -9,12 +9,9 @@ h1 {
   line-height: 1.1;
 }
 
-section {
+#login, #signup {
   width: 100%;
   height: 100vh;
-}
-
-#login, #signup {
   background-image: url("./assets/bg-jira.jpg");
   background-size: cover;
   background-position: center;

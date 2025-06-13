@@ -55,17 +55,34 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// project APIS routes
-// create project
-app.post('/project/', (req, res) => {
+// get user data
+app.get('/user', (req, res) => {
     try {
-        Project.create(req.body)
-            .then(project => res.status(201).json(project))
+        User.find()
+            .then(users => res.status(200).json(users))
             .catch(err => res.status(400).json({ error: err.message }));
     } catch (error) {
         res.status(400).send(error);
     }
 });
+
+// get user by id
+app.get('/user/:id', (req, res) => {
+    try {
+        User.findOne(req.params.id)
+            .then(user => {
+                if (!user) {
+                    return res.status(404).json({ message: "User not found" });
+                }
+                res.status(200).json(user);
+            })
+            .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+
 
 //read all project
 app.get('/project/', (req, res) => {
@@ -172,6 +189,17 @@ app.post('/ticket/', authToken, (req, res) => {
     try {
         Ticket.create(req.body.data)
             .then(ticket => res.status(201).json(ticket))
+            .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+//read all tickets
+app.get('/ticket/', (req, res) => {
+    try {
+        Ticket.find()
+            .then(tickets => res.status(200).json(tickets))
             .catch(err => res.status(400).json({ error: err.message }));
     } catch (error) {
         res.status(400).send(error);
