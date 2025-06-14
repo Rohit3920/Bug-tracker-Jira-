@@ -295,6 +295,26 @@ app.put('/ticket/:id/assign', (req, res) => {
     }
 });
 
+// `/api/tickets/${ticketId}/status`
+app.put('/ticket/:id/status', (req, res) => {
+    try {
+        Ticket.findByIdAndUpdate(
+            req.params.id,
+            { status: req.body.status },
+            { new: true }
+        )
+            .then(ticket => {
+                if (!ticket) {
+                    return res.status(404).json({ message: "Ticket not found" });
+                }
+                res.status(200).json(ticket);
+            })
+            .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
 
 http.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

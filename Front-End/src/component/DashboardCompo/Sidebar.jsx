@@ -10,6 +10,9 @@ function Sidebar() {
         py-2 md:p-4 md:border-r md:space-y-2 border-gray-400">
 
             <nav className="flex md:flex-col space-x-4 md:space-x-0 md:space-y-2 w-full justify-around md:justify-start">
+                <Link to="/progress-report" className="block py-2 px-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors duration-200">
+                    Progress report
+                </Link>
                 <Link to="/project" className="block py-2 px-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors duration-200">
                     Projects
                 </Link>

@@ -107,8 +107,9 @@ const UpdateTicket = () => {
                         value={status}
                         onChange={e => setStatus(e.target.value)}>
                         <option value="open">Open</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="closed">Closed</option>
+                        <option value="to do">To Do</option>
+                        <option value="in progress">In Progress</option>
+                        <option value="done">Done</option>
                     </select>
                 </div>
 

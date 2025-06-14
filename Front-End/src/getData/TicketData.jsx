@@ -45,5 +45,17 @@ export const TicketDataByProjectId = async function (projectId) {
     }
 }
 
+export const UpdateTicketStatus = async function (ticketId, status) {
+    try {
+        //  `/api/tickets/${ticketId}/status`
+        const response = await axios.put(`http://localhost:5000/ticket/${ticketId}/status`, { status });
+        console.log('Updated ticket status:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error updating ticket status:', error);
+        throw new Error('Failed to update ticket status. Please ensure your backend server is running.');
+    }
+}
+
 
 
