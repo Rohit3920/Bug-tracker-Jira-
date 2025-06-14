@@ -82,7 +82,16 @@ app.get('/user/:id', (req, res) => {
     }
 });
 
-
+//create project
+app.post('/project/', (req, res) => {
+    try {
+        Project.create(req.body)
+            .then(project => res.status(201).json(project))
+            .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
 
 //read all project
 app.get('/project/', (req, res) => {
@@ -207,7 +216,7 @@ app.get('/ticket/', (req, res) => {
 });
 
 //read all tickets by project id
-app.get('/ticket/:projectId', (req, res) => {
+app.get('/project-ticket/:projectId', (req, res) => {
     try {
         Ticket.find({ projectId: req.params.projectId })
             .then(tickets => res.status(200).json(tickets))
@@ -217,14 +226,31 @@ app.get('/ticket/:projectId', (req, res) => {
     }
 });
 
+//read ticket by id
+app.get('/update-ticket/:id', (req, res) => {
+    try {
+        Ticket.findById(req.params.id)
+            .then(ticket => {
+                if (!ticket) {
+                    return res.status(404).json({ message: "Ticket not found" });
+                }
+                res.status(200).json(ticket);
+            })
+            .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
 //update ticket
-app.put('/ticket/:id', (req, res) => {
+app.put('/update-ticket/:id', (req, res) => {
     try {
         Ticket.findByIdAndUpdate(req.params.id, req.body, { new: true })
             .then(ticket => {
                 if (!ticket) {
                     return res.status(404).json({ message: "Ticket not found" });
                 }
+                console.log(ticket)
                 res.status(200).json(ticket);
             })
             .catch(err => res.status(400).json({ error: err.message }));

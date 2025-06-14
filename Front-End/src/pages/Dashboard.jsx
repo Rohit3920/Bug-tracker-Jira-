@@ -6,6 +6,7 @@ import DashboardProjects from '../component/DashboardCompo/DashboardProjects';
 import Sidebar from '../component/DashboardCompo/sidebar';
 import { Link } from 'react-router-dom';
 import ProjectSelector from '../component/ProjectSelector';
+import Breadcrumbs from '../component/Breadcrumbs';
 
 function Dashboard() {
 
@@ -42,8 +43,8 @@ function Dashboard() {
         <Sidebar />
       </div>
       <main className="flex-1 ml-50 p-8 pb-16 md:p-8 overflow-y-auto">
+        <Breadcrumbs parentName="Dashboard" parentRoute="/" currentName="Overview" />
         <h1 className="text-4xl font-extrabold text-gray-900 mb-8">Dashboard Overview</h1>
-
         <DashboardTicket ticket={tickets} />
 
         <DashboardProjects projects={projects} />

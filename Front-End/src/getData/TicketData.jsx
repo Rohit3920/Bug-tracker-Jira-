@@ -13,7 +13,7 @@ export async function TicketData() {
 
 export async function TicketDataById(ticketId) {
     try {
-        const response = await axios.get(`http://localhost:5000/ticket/${ticketId}`);
+        const response = await axios.get(`http://localhost:5000/update-ticket/${ticketId}`);
         console.log('Fetched ticket data by ID:', response.data);
         return response.data;
     } catch (error) {
@@ -23,7 +23,18 @@ export async function TicketDataById(ticketId) {
 }
 
 
-export const TicketDataByProjectId = async function(projectId) {
+export async function updateTicket(ticketId, updatedData) {
+    try {
+        const response = await axios.put(`http://localhost:5000/update-ticket/${ticketId}`, updatedData);
+        console.log('Updated ticket data:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error updating ticket data:', error);
+        throw new Error('Failed to update ticket. Please ensure your backend server is running.');
+    }
+}
+
+export const TicketDataByProjectId = async function (projectId) {
     try {
         const response = await axios.get(`http://localhost:5000/ticket/${projectId}`);
         console.log('Fetched ticket data by project ID:', response.data);
@@ -33,3 +44,6 @@ export const TicketDataByProjectId = async function(projectId) {
         throw new Error('Failed to load tickets. Please ensure your backend server is running.');
     }
 }
+
+
+

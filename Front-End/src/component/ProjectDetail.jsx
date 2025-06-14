@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ProjectDataById } from '../getData/ProjectData';
 import { UserDataById } from '../getData/UserData';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 const ProjectDetail = () => {
     const { projectId } = useParams();
@@ -86,8 +86,10 @@ const ProjectDetail = () => {
                     </div>
 
 
-                    <div className="text-xs text-gray-400 border-t pt-4 mt-4">
-                        <p><strong>Project ID:</strong> {project._id}</p>
+                    <div className="text-xs  pt-4 mt-4">
+                        <p className='text-gray-400 border-t mb-5'><strong>Project ID:</strong> {project._id}</p>
+                        <Link className='mr-3' to={`/ticket/project-ticket/${project._id}`}><button className='bg-orange-500 text-white px-4 py-2 rounded-md'>Show tickets</button></Link>
+                        <Link className='mr-3' to={`/project/update-Project/${project._id}`}><button className='bg-red-500 text-white px-4 py-2 rounded-md'>Edit Project</button></Link>
                     </div>
                 </div>
             </div>

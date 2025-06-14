@@ -1,6 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function TicketDetail({ ticket }) {
+
+    const Navigate = useNavigate();
 
     if (!ticket) {
         return <div className="text-center text-gray-500 p-4">No ticket data available.</div>;
@@ -73,6 +76,12 @@ function TicketDetail({ ticket }) {
                             <span className="text-gray-500 italic">Unassigned</span>
                         )}
                     </div>
+                </div>
+
+                <div className="w-full px-auto">
+                        <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md"
+                        onClick={() => Navigate(`/ticket/update-ticket/${ticket._id}`)}
+                        >Update Ticket</button>
                 </div>
 
             </div>
