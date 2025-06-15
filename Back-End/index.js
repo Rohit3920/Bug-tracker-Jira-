@@ -5,6 +5,7 @@ const PORT = process.env.PORT || 5000;
 const User = require('./models/userModel');
 const Project = require('./models/projectModel');
 const Ticket = require('./models/ticketModel');
+const Comment = require('./models/commentModel');
 const authToken = require('./middleware/authToken');
 
 require("dotenv").config();
@@ -47,7 +48,7 @@ app.post('/login', async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
-        const token = Jwt.sign({user}, jwtKey, { expiresIn: '2h' });
+        const token = Jwt.sign({ user }, jwtKey, { expiresIn: '2h' });
         res.status(200).json({ token, user });
     } catch (error) {
         console.log("some login user error");
@@ -308,6 +309,40 @@ app.put('/ticket/:id/status', (req, res) => {
                     return res.status(404).json({ message: "Ticket not found" });
                 }
                 res.status(200).json(ticket);
+            })
+            .catch(err => res.status(400).json({ error: err.message }));
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+// add comment to ticket
+app.post('/ticket/comment', async (req, res) => {
+    try {
+        const { text, userId, ticketId } = req.body;
+
+        const comment = await Comment.create({
+            text,
+            userId,
+            ticketId
+        });
+        res.status(201).json(comment);
+
+    } catch (error) {
+        console.error(`Error adding comment to ticket ${req.params.id}:`, error);
+        res.status(500).json({ message: "An unexpected error occurred while adding the comment." });
+    }
+});
+
+// show comment history of ticket
+app.get('/ticket/comment-history/:ticketId', (req, res) => {
+    try {
+        Comment.find({ ticketId: req.params.ticketId }) // Find all comments associated with the ticketId
+            .then(comments => {
+                if (!comments || comments.length === 0) {
+                    return res.status(404).json({ message: "No comments found for this ticket" });
+                }
+                res.status(200).json(comments); // Return the array of comments directly
             })
             .catch(err => res.status(400).json({ error: err.message }));
     } catch (error) {

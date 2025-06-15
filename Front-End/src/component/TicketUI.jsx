@@ -1,6 +1,6 @@
 import React from 'react'
 
-function TicketUI({ data }) { 
+function TicketUI({ data }) {
     return (
         <article key={data.id} className="flex w-full max-h-47 min-h-45 max-w-xl overflow-hidden flex-col items-start justify-between border-1 p-3 border-gray-600 rounded-2xl hover:bg-blue-50">
             <div className="flex w-fit items-center gap-x-4 text-xs">

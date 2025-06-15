@@ -41,13 +41,13 @@ function AllTickets() {
                     </thead>
                     <tbody className="text-center">
                         {tickets.map(ticket => (
-                            <tr key={ticket.id}>
+                            <tr key={ticket._id}>
                                 {/* <td className="px-4 py-2 border-b">{ticket.projectId}</td> */}
                                 <td className="px-4 py-2 border-b">{ticket.title}</td>
                                 <td className="px-4 py-2 border-b">{ticket.status}</td>
                                 <td className="px-4 py-2 border-b">{new Date(ticket.createdAt).toLocaleDateString()}</td>
                                 <td className="px-4 py-2 border-b">
-                                    <button className="pr-2 text-blue-500 hover:underline"><Link to={`/ticket/${ticket._id}`}>View</Link></button>
+                                    <button className="pr-2 text-blue-500 hover:underline"><Link to={`/ticket/ticket-view/${ticket._id}`}>View</Link></button>
                                     <button className="pr-2 text-red-500 hover:underline">Delete</button>
                                     <button className="pr-2 text-green-500 hover:underline"><Link to={`/ticket/update-ticket/${ticket._id}`}>Update</Link></button>
                                 </td>
