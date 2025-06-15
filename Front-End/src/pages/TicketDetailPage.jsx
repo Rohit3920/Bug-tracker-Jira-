@@ -1,5 +1,5 @@
 import React from 'react'
-import TicketDetail from '../component/TicketDetail'
+import TicketDetail from '../component/ticket/TicketDetail'
 
 function TicketDetailPage() {
 

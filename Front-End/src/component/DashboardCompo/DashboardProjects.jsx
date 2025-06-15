@@ -1,6 +1,6 @@
 
-import ProjectContent from '../ProjectContent';
-import TicketDetail from '../TicketDetail'
+import ProjectContent from '../project/ProjectContent';
+import TicketDetail from '../ticket/TicketDetail'
 
 function DashboardProjects({ projects }) {
     console.log("Projects in DashboardProjects:", projects);

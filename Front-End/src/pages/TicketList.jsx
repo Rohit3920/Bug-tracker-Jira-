@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import TicketUI from "../component/TicketUI";
+import TicketUI from "../component/ticket/TicketUI";
 import { TicketDataByProjectId } from "../getData/TicketData";
 import { useParams } from "react-router-dom";
 

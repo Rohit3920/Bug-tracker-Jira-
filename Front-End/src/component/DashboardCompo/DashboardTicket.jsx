@@ -1,4 +1,4 @@
-import TicketDetail from '../TicketDetail'
+import TicketDetail from '../ticket/TicketDetail'
 
 function DashboardTicket({ ticket }) {
     return (

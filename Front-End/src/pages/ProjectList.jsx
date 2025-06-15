@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import ProjectContent from '../component/ProjectContent'
+import ProjectContent from '../component/project/ProjectContent'
 import { ProjectData } from '../getData/ProjectData'
 
 function ProjectList() {

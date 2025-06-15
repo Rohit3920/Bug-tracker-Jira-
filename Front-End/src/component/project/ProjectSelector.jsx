@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ProjectData } from '../getData/ProjectData';
+import { ProjectData } from '../../getData/ProjectData';
 import { Link, useNavigate } from 'react-router-dom';
 
 const ProjectSelector = ({ onSelectProject }) => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ProjectDataById } from '../getData/ProjectData';
-import { UserDataById } from '../getData/UserData';
+import { ProjectDataById } from '../../getData/ProjectData';
+import { UserDataById } from '../../getData/UserData';
 import { Link, useParams } from 'react-router-dom';
 
 const ProjectDetail = () => {

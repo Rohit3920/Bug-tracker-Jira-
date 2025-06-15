@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
-import ProjectSelector from './ProjectSelector';
-import { ProjectData } from '../getData/ProjectData';
+import ProjectSelector from '../project/ProjectSelector';
+import { ProjectData } from '../../getData/ProjectData';
 
 const TicketForm = () => {
     const [title, setTitle] = useState("");

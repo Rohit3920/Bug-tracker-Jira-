@@ -5,7 +5,7 @@ import DashboardTicket from '../component/DashboardCompo/DashboardTicket';
 import DashboardProjects from '../component/DashboardCompo/DashboardProjects';
 import Sidebar from '../component/DashboardCompo/sidebar';
 import { Link } from 'react-router-dom';
-import ProjectSelector from '../component/ProjectSelector';
+import ProjectSelector from '../component/project/ProjectSelector';
 import Breadcrumbs from '../component/Breadcrumbs';
 
 function Dashboard() {
