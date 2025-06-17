@@ -18,6 +18,7 @@ import AllTickets from './component/ticket/AllTickets'
 import ProgressBoard from './component/ProgressBoard/ProgressBoard'
 import TicketView from './component/ticket/TicketView'
 import UserProfile from './component/UserProfile'
+import AssignTicket from './component/ticket/AssignTicket'
 // import Sidebar from './component/DashboardCompo/sidebar'
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
               <Route path='/ticket/ticket-view/:ticketId' element={<TicketView />} />
               <Route path='/ticket/project-ticket/:projectId' element={<TicketList />} />
               <Route path='/ticket/update-ticket/:ticketId' element={<UpdateTicket />} />
+              <Route path='/ticket/assign-ticket/:ticketId' element={<AssignTicket />} />
               <Route path='/ticket/addTicket' element={<TicketForm />} />
               <Route path='/ticket/ticketDetail/' element={<TicketDetailPage />} />
 

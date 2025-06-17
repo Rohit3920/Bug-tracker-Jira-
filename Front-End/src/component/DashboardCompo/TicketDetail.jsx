@@ -66,8 +66,8 @@ function TicketDetail({ ticket }) {
                 <div className="flex items-start col-span-full sm:col-span-1">
                     <span className="font-semibold text-gray-600 w-20">Assignee(s):</span>
                     <div className="flex flex-wrap gap-1">
-                        {ticket.assignees && ticket.assignees.length > 0 ? (
-                            ticket.assignees.map((assignee, index) => (
+                        {ticket.assignee && ticket.assignee.length > 0 ? (
+                            ticket.assignee.map((assignee, index) => (
                                 <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
                                     {assignee}
                                 </span>
@@ -79,9 +79,15 @@ function TicketDetail({ ticket }) {
                 </div>
 
                 <div className="w-full px-auto">
-                        <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md"
+                    <button className="w-full mr-5 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md"
                         onClick={() => Navigate(`/ticket/update-ticket/${ticket._id}`)}
-                        >Update Ticket</button>
+                    >Update Ticket</button>
+                </div>
+
+                <div className="w-full px-auto">
+                    <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md"
+                        onClick={() => Navigate(`/ticket/assign-ticket/${ticket._id}`)}
+                    >Assign Ticket</button>
                 </div>
 
             </div>

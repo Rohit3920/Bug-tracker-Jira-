@@ -76,13 +76,20 @@ export async function updateTicket(ticketId, updatedData) {
     }
 }
 
+
 export async function TicketDataByProjectId(projectId) {
     try {
+        if (!projectId) {
+            console.warn("TicketDataByProjectId called without a projectId.");
+            throw new Error("Project ID is required to fetch tickets.");
+        }
+
         const response = await axios.get(`${routeURL}/project-ticket/${projectId}`);
         console.log(`Fetched tickets for project ID ${projectId}:`, response.data);
         return response.data;
     } catch (error) {
         handleApiError(error, `Failed to load tickets for project ID ${projectId}.`);
+        throw error;
     }
 }
 

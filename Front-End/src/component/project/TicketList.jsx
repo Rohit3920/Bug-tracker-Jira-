@@ -11,13 +11,16 @@ function TicketList() {
     const [error, setError] = useState(null);
 
     const { projectId } = useParams();
+
+    // The getTicketData useCallback is already very good.
     const getTicketData = useCallback(async (currentProjectId) => {
         setLoading(true);
         setError(null);
-        setTickets([]);
+        setTickets([]); // Clear previous tickets
 
         try {
             if (!currentProjectId) {
+                // This check is good. It prevents unnecessary API calls and sets a clear error.
                 setError('No project ID provided in the URL to fetch tickets.');
                 setLoading(false);
                 return;
@@ -26,31 +29,50 @@ function TicketList() {
             const response = await TicketDataByProjectId(currentProjectId);
             console.log('TicketDataByProjectId response:', response);
 
+            // The backend might return a 404 for "no tickets found", but your current backend
+            // code returns { message: "No tickets found..." } for 404.
+            // If the backend returns 200 with an empty array for no tickets,
+            // this `if (Array.isArray(response))` check is perfect.
+            // If the backend returns a 404, that would be caught by `TicketDataByProjectId`'s `handleApiError`
+            // and re-thrown, landing in this `catch` block.
             if (Array.isArray(response)) {
                 setTickets(response);
-                toast.success('Tickets loaded successfully!');
+                // Only show success if tickets were actually found, or if an empty array is a 'success'
+                if (response.length > 0) {
+                    toast.success('Tickets loaded successfully!');
+                } else {
+                    toast.info('No tickets found for this project yet.');
+                }
             } else {
                 console.error('API response is not an array:', response);
                 setError('Received unexpected data format from the ticket API.');
-                setTickets([]);
+                setTickets([]); // Ensure tickets array is empty
+                toast.error('Received unexpected data format from the ticket API.'); // Add toast for this specific case
             }
         } catch (err) {
-            console.error('Error fetching tickets:', err);
-            let errorMessage = 'Failed to load tickets. Please ensure your backend server is running and the API endpoint is correct.';
-
-            if (err.response) {
-                errorMessage = `Error ${err.response.status}: ${err.response.data.error || err.response.data.message || 'Server error'}`;
-            } else if (err.request) {
-                errorMessage = 'Network error: No response from server. Please check your internet connection or backend server status.';
+            console.error('Error fetching tickets in TicketList component:', err);
+            // The handleApiError in TicketDataByProjectId already displays a toast.
+            // You might not want a duplicate toast here.
+            // This catch block is primarily for updating local component state (error, loading, tickets)
+            // based on the re-thrown error from TicketDataByProjectId.
+            let errorMessage = err.message || 'Failed to load tickets.';
+            // Check if the error is from a specific 404 response indicating no tickets
+            if (err.response && err.response.status === 404 && err.response.data.message === "No tickets found for this project.") {
+                errorMessage = "No tickets found for this project.";
+                // Don't set an error state that shows the retry button if it's genuinely 'no tickets'
+                setError(null); // Clear error for this specific case
+                setTickets([]); // Ensure empty array
+                toast.info(errorMessage); // Use info toast
             } else {
-                errorMessage = `Request setup error: ${err.message}`;
+                setError(errorMessage); // Set error for actual failures
+                setTickets([]); // Ensure empty array on real error
+                toast.error(errorMessage); // Show toast for real error
             }
-            setError(errorMessage);
-            setTickets([]);
-            toast.error(errorMessage);
-            setLoading(false);
+
+        } finally {
+            setLoading(false); // Always set loading to false in finally
         }
-    }, []);
+    }, []); // `projectId` should be in the dependency array of `useCallback` if it's used inside, but it's passed as `currentProjectId`. If `projectId` were directly used inside the effect/callback without being passed, it would need to be a dependency. Here, it's fine.
 
     useEffect(() => {
         if (projectId) {
@@ -58,6 +80,7 @@ function TicketList() {
         } else {
             setLoading(false);
             setError('Please select a project to view tickets.');
+            toast.info('Please select a project to view tickets.'); // Add toast for this
         }
     }, [projectId, getTicketData]);
 
@@ -72,6 +95,8 @@ function TicketList() {
                         Tickets
                     </h2>
                     <br />
+                    {/* CONSIDER: If 'addTicket' needs the projectId, pass it in the URL */}
+                    {/* Example: <Link to={`/project/${projectId}/ticket/add`} ... /> */}
                     <Link to={`/ticket/addTicket/`} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md">
                         Create New Ticket
                     </Link>
@@ -99,10 +124,37 @@ function TicketList() {
                     ) : tickets.length > 0 ? (
                         <ul className="grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2">
                             {tickets.map((ticket) => (
-                                <li key={ticket._id}>
-                                    <Link to={`/ticket/ticket-view/${ticket._id}`} >
+                                <li key={ticket._id} className="p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"> {/* Added some styling for list items */}
+                                    <Link to={`/ticket/ticket-view/${ticket._id}`} className="block"> {/* Make the whole card clickable */}
                                         <h3 className="text-xl font-semibold text-gray-800 mb-1">{ticket.title}</h3>
+                                        {/* Display creation date/time if available */}
+                                        {ticket.createdAt && (
+                                            <p className="text-xs text-gray-500 mb-2">
+                                                Created: {new Date(ticket.createdAt).toLocaleDateString()}
+                                            </p>
+                                        )}
                                         <p className="text-gray-600 text-sm line-clamp-2">{ticket.description}</p>
+                                        {/* Add more ticket details here, e.g., status, priority */}
+                                        <div className="mt-2 flex flex-wrap gap-2">
+                                            {ticket.status && (
+                                                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${ticket.status === 'Open' ? 'bg-green-100 text-green-800' :
+                                                        ticket.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' :
+                                                            ticket.status === 'Closed' ? 'bg-gray-100 text-gray-800' :
+                                                                'bg-blue-100 text-blue-800'
+                                                    }`}>
+                                                    {ticket.status}
+                                                </span>
+                                            )}
+                                            {ticket.priority && (
+                                                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${ticket.priority === 'High' ? 'bg-red-100 text-red-800' :
+                                                        ticket.priority === 'Medium' ? 'bg-orange-100 text-orange-800' :
+                                                            'bg-blue-100 text-blue-800'
+                                                    }`}>
+                                                    {ticket.priority}
+                                                </span>
+                                            )}
+                                            {/* Add assignee, type etc. if available */}
+                                        </div>
                                     </Link>
                                 </li>
                             ))}
@@ -112,7 +164,10 @@ function TicketList() {
                             <p className="text-xl text-gray-600 mb-6">
                                 No tickets found for this project.
                             </p>
-                            <Link to="/ticket/create-ticket" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            {/* The Link for creating a new ticket should ideally pass the projectId */}
+                            {/* If create-ticket needs projectId as a prop or part of the URL, adjust this: */}
+                            {/* Example: <Link to={`/project/${projectId}/ticket/create`} ... /> */}
+                            <Link to={`/ticket/addTicket`} className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                 <FontAwesomeIcon icon={faPlus} className="mr-2" /> Create New Ticket
                             </Link>
                         </div>

@@ -23,31 +23,20 @@ app.use(cors(corsOptions));
 app.use(express.json());
 const http = require('http').Server(app);
 
-// Assuming you have your User model and jwtKey defined:
-// const User = require('./models/User'); // Your Mongoose User model
-// const Jwt = require('jsonwebtoken');
-// const jwtKey = 'your-secret-key'; // Keep this secure and in environment variables!
-
-// --- Centralized Error Handling Middleware ---
-// This middleware should be placed early in your Express app setup (e.g., in app.js)
-// It catches errors passed via next(error) and sends a consistent response.
 app.use((err, req, res, next) => {
-    console.error('API Error:', err.stack); // Log the full stack trace for debugging
+    console.error('API Error:', err.stack);
 
-    // Handle Mongoose validation errors
     if (err.name === 'ValidationError') {
         return res.status(400).json({
             message: 'Validation failed',
-            errors: err.errors // Mongoose validation errors object
+            errors: err.errors
         });
     }
 
-    // Handle invalid ObjectId format for /user/:id or other ID-based routes
     if (err.name === 'CastError' && err.kind === 'ObjectId') {
         return res.status(400).json({ message: 'Invalid ID format.' });
     }
 
-    // Handle duplicate key errors (e.g., duplicate email during registration)
     if (err.code === 11000) {
         const field = Object.keys(err.keyValue).join(', ');
         return res.status(409).json({
@@ -56,36 +45,28 @@ app.use((err, req, res, next) => {
         });
     }
 
-    // Generic server error
     res.status(500).json({ message: 'An unexpected error occurred on the server.' });
 });
 
-// --------------------------API ROUTES--------------------------
+// --------------------------API ROUTES-------------------------
 
-// --- Register Route ---
 app.post('/register', async (req, res, next) => {
     try {
-        const { name, email, password } = req.body; // Assuming name, email, password are sent
+        const { username, email, password, role } = req.body;
 
-        // Basic input validation
-        if (!name || !email || !password) {
-            return res.status(400).json({ message: "Name, email, and password are required for registration." });
+        const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+        if (existingUser) {
+            return res.status(409).json({ message: "User with this username or email already exists." });
         }
 
-        // Before creating, ensure password is HASHED.
-        // Your User model's pre-save hook for password hashing should handle this.
-        const user = await User.create({ name, email, password });
-
-        // Optionally, remove password from the user object before sending response
-        const userResponse = user.toObject();
-        delete userResponse.password;
-
-        // Generate JWT token upon successful registration
-        const token = Jwt.sign({ _id: user._id, email: user.email }, jwtKey, { expiresIn: '2h' });
-
-        res.status(201).json({ message: "User registered successfully!", token, user: userResponse });
+        const user = await User.create({ username, email, password, role });
+        return user;
     } catch (error) {
-        next(error); // Pass error to the centralized error handling middleware
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyValue).join(', ');
+            return res.status(409).json({ message: `A user with this ${field} already exists. Please use a different one.` });
+        }
+        next(error);
     }
 });
 
@@ -93,8 +74,6 @@ app.post('/register', async (req, res, next) => {
 app.post('/login', async (req, res, next) => {
     try {
         const { email, password } = req.body;
-
-        // Basic input validation
         if (!email || !password) {
             return res.status(400).json({ message: "Email and password are required for login." });
         }
@@ -102,23 +81,16 @@ app.post('/login', async (req, res, next) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(401).json({ message: "Invalid credentials." }); // Use 401 for unauthorized
-        }
-
-        // Assuming user.comparePassword is an async method on your Mongoose User schema
-        const isMatch = await user.comparePassword(password);
-
-        if (!isMatch) {
             return res.status(401).json({ message: "Invalid credentials." });
         }
 
-        // Optionally, remove password from the user object before sending response
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Invalid credentials." });
+        }
         const userResponse = user.toObject();
         delete userResponse.password;
-
-        // Generate JWT token
         const token = Jwt.sign({ _id: user._id, email: user.email }, jwtKey, { expiresIn: '2h' });
-
         res.status(200).json({ message: "Login successful!", token, user: userResponse });
     } catch (error) {
         next(error); // Pass error to the centralized error handling middleware
@@ -148,11 +120,7 @@ app.get('/user/:id', async (req, res, next) => {
         next(error);
     }
 });
-// Before app.post/get/put/delete routes, define the Project model (e.g., from Mongoose)
-// const Project = require('../models/Project'); // Assuming your Project model is defined here
 
-// Centralized error handler middleware (add this higher up in your app.js/server.js)
-// This will catch errors thrown in your route handlers and send a consistent response.
 app.use((err, req, res, next) => {
     console.error(err.stack); // Log the error for debugging
     if (err.name === 'ValidationError') {
@@ -284,9 +252,6 @@ app.delete("/project/:id", async (req, res, next) => {
 });
 // ticket APIS routes
 
-// Middleware for authentication (assuming authToken is defined elsewhere)
-// const authToken = require('./middleware/authToken'); // Example
-
 // --- Add new Ticket ---
 app.post('/ticket/', async (req, res) => {
     try {
@@ -316,17 +281,18 @@ app.get('/ticket/', async (req, res) => {
     }
 });
 
-// --- Read All Tickets by Project ID ---
-app.get('/project-ticket/:projectId', async (req, res) => {
+app.get('/project-ticket/:projectId', async (req, res, next) => {
     try {
-        const tickets = await Ticket.find({ projectId: req.params.projectId });
+        const { projectId } = req.params;
+        const tickets = await Ticket.find({ projectId: projectId });
+
         if (!tickets || tickets.length === 0) {
-            return res.status(404).json({ message: "No tickets found for this project." });
+            return res.status(200).json([]);
         }
         res.status(200).json(tickets);
     } catch (error) {
         console.error(`Error reading tickets for project ${req.params.projectId}:`, error);
-        res.status(500).json({ message: 'An unexpected error occurred while fetching project tickets.' });
+        next(error);
     }
 });
 
