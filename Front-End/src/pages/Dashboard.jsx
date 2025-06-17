@@ -52,10 +52,10 @@ function Dashboard() {
         <section className="mb-8 bg-white p-6 rounded-lg shadow-md border border-gray-200">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">More Actions</h2>
           <div className="flex flex-wrap gap-4">
-            <Link to="/create-project" className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md">
+            <Link to="/project/create-Project" className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md">
               Create New Project
             </Link>
-            <Link to="/create-ticket" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md">
+            <Link to="/ticket/addTicket" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md">
               Create New Ticket
             </Link>
             <div className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md">

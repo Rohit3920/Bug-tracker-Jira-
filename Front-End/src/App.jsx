@@ -4,7 +4,7 @@ import Login from './pages/Login'
 import SignUp from './pages/SignUp'
 import Main from './pages/Main'
 import ProjectList from './pages/ProjectList'
-import TicketList from './pages/TicketList'
+import TicketList from './component/project/TicketList'
 import ProtectRoute from './ProtectRoute'
 import TicketDetailPage from './pages/TicketDetailPage'
 import Navbar from './component/Navbar'
@@ -12,11 +12,12 @@ import TicketForm from './component/ticket/TicketForm'
 import ProjectDetail from './component/project/ProjectDetail'
 import ProjectSelector from './component/project/ProjectSelector'
 import UpdateTicket from './component/ticket/UpdateTicket'
-import CreateProject from './component/project/createProject'
+import CreateProject from './component/project/CreateProject'
 import UpdateProject from './component/project/UpdateProject'
 import AllTickets from './component/ticket/AllTickets'
 import ProgressBoard from './component/ProgressBoard/ProgressBoard'
 import TicketView from './component/ticket/TicketView'
+import UserProfile from './component/UserProfile'
 // import Sidebar from './component/DashboardCompo/sidebar'
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Routes>
             <Route element={<ProtectRoute />}>
               <Route path='/' element={<Main />} />
+              <Route path="/profile" element={<UserProfile />} />
               <Route path='/project' element={<ProjectList />} />
               <Route path='/project/create-Project' element={<CreateProject />} />
               <Route path='/project/update-Project/:projectId' element={<UpdateProject />} />

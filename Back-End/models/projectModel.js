@@ -12,8 +12,8 @@ const projectSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Not Started', 'Progress', 'Completed', 'On Hold'],
-        default: 'Not Started'
+        enum: ['not_started', 'in_progress', 'completed', 'on_hold'],
+        default: 'not_started'
     },
     teamMembers: [
         {

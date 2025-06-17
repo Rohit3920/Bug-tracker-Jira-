@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import TicketForm from '../component/ticket/TicketForm'
-import TicketList from './TicketList'
+// import TicketList from './TicketList'
 import Dashboard from './Dashboard';
 
 function Main() {

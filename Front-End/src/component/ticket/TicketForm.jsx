@@ -1,128 +1,139 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios'
-import ProjectSelector from '../project/ProjectSelector';
-import { ProjectData } from '../../getData/ProjectData';
+import React, { useState, useEffect, useCallback } from 'react';
+import { toast } from 'react-toastify';
+import { ProjectData } from '../../getData/ProjectData'; // Assuming this fetches projects correctly
+import { createTicket } from '../../getData/TicketData';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const TicketForm = () => {
     const [title, setTitle] = useState("");
-    const [desc, setDesc] = useState("");
+    const [description, setDescription] = useState("");
     const [priority, setPriority] = useState("medium");
-    const [assignee, setAssign] = useState(["6843cb5390b184e9813d8c2c"]);
-    // const [status, setStatus] = useState("open");
-    const [project, setProject] = useState("");
+    const [projectId, setProjectId] = useState(""); // State for selected project ID
 
-    // used for select project
-    const [projects, setProjects] = useState([]);
+    const [projects, setProjects] = useState([]); // State to store fetched projects
 
-    const formData = {
-        title: title,
-        description: desc,
-        priority: priority,
-        assignee,
-        status: "Open",
-        project: project,
-        createdAt: new Date(),
-    };
+    const [loadingProjects, setLoadingProjects] = useState(true);
+    const [projectError, setProjectError] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    useEffect(() => {
-        ProjectData()
-            .then((response) => {
-                setProjects(response);
-            }).catch((err) => {
-                console.error('Error fetching projects:', err);
-            });
+    const fetchProjects = useCallback(async () => {
+        setLoadingProjects(true);
+        setProjectError(null);
+        try {
+            const response = await ProjectData();
+            setProjects(response);
+            if (response.length > 0) {
+                // Automatically select the first project if available
+                setProjectId(response[0]._id);
+            }
+        } catch (err) {
+            console.error('Error fetching projects:', err);
+            setProjectError(err.message || 'Failed to load projects.');
+        } finally {
+            setLoadingProjects(false);
+        }
     }, []);
 
-    const handleChange = (event) => {
-        const newProjectId = event.target.value;
-        setProject(newProjectId);
-    };
+    useEffect(() => {
+        fetchProjects();
+    }, [fetchProjects]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
+        toast.dismiss(); // Dismiss any existing toasts
 
-        if (!formData.title || !formData.description || !formData.assignee) {
-            alert('Please fill in all required fields (Title, Description, Assignee).');
+        if (!title || !description || !projectId) {
+            toast.error('Please fill in all required fields (Title, Description, Project).');
+            setIsSubmitting(false);
             return;
         }
 
-        const headers = {
-            'authorization': `bearer ${JSON.parse(localStorage.getItem('token'))}`
-        }
-        const data = {
+        const newTicketData = {
             title,
-            description: desc,
+            description,
             priority,
-            status: "open",
-            assignee,
-            projectId: project
+            // Removed 'assignee: []' as it's not being set by the form and
+            // your schema expects a single ObjectId or null.
+            // If you need an assignee, you would add a field for it in the form
+            // and populate it here with a valid User ObjectId.
+            status: "open", // Default status from schema, can be omitted if not needed for submission
+            projectId,
+        };
+
+        console.log("Submitting new ticket data:", newTicketData);
+
+        try {
+            const response = await createTicket(newTicketData);
+            toast.success("Ticket created successfully!");
+            console.log("Ticket creation response:", response);
+
+            // Clear the form fields after successful submission
+            setTitle("");
+            setDescription("");
+            setPriority("medium");
+            // Note: ProjectId is usually left selected or reset based on UX
+            // setProjectId(projects.length > 0 ? projects[0]._id : ""); // Optionally reset to first project or empty
+        } catch (error) {
+            console.error("Error submitting ticket:", error);
+            // The handleApiError in createTicket already throws an error with a message
+            // so we can directly use error.message here.
+            toast.error(error.message || "There was an error creating the ticket!");
+        } finally {
+            setIsSubmitting(false);
         }
-
-        axios.post('http://localhost:5000/ticket/', { data, headers })
-            .then((response) => {
-                console.log("Response : ", response.data);
-            }).catch((error) => {
-                console.error("There was an error creating a ticket!", error);
-            });
-
-        console.log(formData)
     };
 
     return (
-        <div className="w-10/12 sm:w-1/2 mx-auto border-1 border-black rounded-2xl text-center p-8">
-            <h2 className='mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900'>Create New Ticket</h2>
+        <div className="w-11/12 sm:w-2/3 lg:w-1/2 mx-auto bg-white p-8 rounded-xl shadow-lg mt-10 mb-10">
+            <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-8">Create New Ticket</h2>
             <form onSubmit={handleSubmit} className="space-y-6">
 
                 <div className="form-group">
-                    <label className='flex text-sm/6 font-medium text-gray-900 pt-4' htmlFor="ticket-title">Title:</label>
-                    <div className="mt-2">
-                        <input className='block w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-800 appearance-none cursor-pointer transition-all duration-300 ease-in-out hover:border-blue-400 shadow-sm' type="text" id="ticket-title"
-                            name="title"
-                            onChange={e => setTitle(e.target.value)}
-                            required
-                        />
-                    </div>
+                    <label className='block text-sm font-medium text-gray-700 mb-1' htmlFor="ticket-title">
+                        Title <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                        className='block w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-in-out hover:border-blue-400 shadow-sm'
+                        type="text"
+                        id="ticket-title"
+                        name="title"
+                        value={title}
+                        onChange={e => setTitle(e.target.value)}
+                        required
+                        placeholder="Enter ticket title"
+                    />
                 </div>
 
                 <div className="form-group">
-                    <label className='flex text-sm/6 font-medium text-gray-900 pt-4' htmlFor="description">Description:</label>
-                    <textarea className='block w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-800 appearance-none cursor-pointer transition-all duration-300 ease-in-out hover:border-blue-400 shadow-sm'
+                    <label className='block text-sm font-medium text-gray-700 mb-1' htmlFor="description">
+                        Description <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                        className='block w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-in-out hover:border-blue-400 shadow-sm'
                         id="description"
                         name="description"
-                        onChange={e => setDesc(e.target.value)}
+                        value={description}
+                        onChange={e => setDescription(e.target.value)}
                         rows="5"
                         required
+                        placeholder="Provide a detailed description of the issue or feature"
                     ></textarea>
                 </div>
 
-                {/* <div className="form-group">
-                    <label htmlFor="assignees" className="block text-sm font-medium text-gray-700 mb-1">
-                        Assignees (Select multiple by holding Ctrl/Cmd)
+                <div className="form-group">
+                    <label className='block text-sm font-medium text-gray-700 mb-1' htmlFor="priority">
+                        Priority <span className="text-red-500">*</span>
                     </label>
                     <select
-                        id="assignees"
-                        multiple
-                        value={assign}
-                        onChange={handleAssigneeChange}
-                        className="block w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-800 appearance-none cursor-pointer transition-all duration-300 ease-in-out hover:border-blue-400 shadow-sm">
-                        <option value="" disabled>Select assignees</option>
-                        {teamMembers.map((member) => (
-                            <option key={member.id} value={member.name}>
-                                {member.name}
-                            </option>
-                        ))}
-                    </select>
-                </div> */}
-
-                <div className="form-group w-full">
-                    <label className='block float-left text-sm/6 font-medium text-gray-900 pt-4' htmlFor="priority">Priority:</label>
-                    <select
-                        className="block w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-800 appearance-none cursor-pointer transition-all duration-300 ease-in-out hover:border-blue-400 shadow-sm"
+                        className="block w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-800 transition-all duration-300 ease-in-out hover:border-blue-400 shadow-sm"
                         id="priority"
                         name="priority"
-                        defaultValue="medium"
-                        onChange={e => setPriority(e.target.value)}>
-                        <option value="medium" disabled>Select Priority</option>
+                        value={priority}
+                        onChange={e => setPriority(e.target.value)}
+                        required
+                    >
                         <option value="low">Low</option>
                         <option value="medium">Medium</option>
                         <option value="high">High</option>
@@ -130,31 +141,46 @@ const TicketForm = () => {
                 </div>
 
                 <div className="form-group">
-                    <label className='flex text-sm/6 font-medium text-gray-900 pt-4' htmlFor="project">Project/Module:</label>
-                    <div
-                        className="block w-full p-3 borderrounded-lg  bg-white text-gray-800 appearance-none cursor-pointer transition-all duration-300 ease-in-out hover:border-blue-400 shadow-sm"
-                        id="project"
-                        name="project"
-                        onChange={e => setProject(e.target.value)}
-                    >
-
+                    <label className='block text-sm font-medium text-gray-700 mb-1' htmlFor="project">
+                        Project/Module <span className="text-red-500">*</span>
+                    </label>
+                    {loadingProjects ? (
+                        <div className="text-gray-500 flex items-center justify-center p-3">
+                            <FontAwesomeIcon icon={faSpinner} spin className="mr-2" /> Loading projects...
+                        </div>
+                    ) : projectError ? (
+                        <p className="text-red-500 text-sm">{projectError}</p>
+                    ) : (
                         <select
                             id="project-select"
-                            className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            value={project}
-                            onChange={handleChange}
+                            className="block w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-800 transition-all duration-300 ease-in-out hover:border-blue-400 shadow-sm"
+                            value={projectId}
+                            onChange={e => setProjectId(e.target.value)}
+                            required
                         >
-                            <option value="">-- Choose a project --</option>
-                            {projects.map((project) => (
-                                <option key={project._id} value={project._id}>
-                                    {project.title}
+                            <option value="" >-- Choose a Project --</option>
+                            {projects.map((proj) => (
+                                <option key={proj._id} value={proj._id}>
+                                    {proj.title}
                                 </option>
                             ))}
                         </select>
-                    </div>
+                    )}
                 </div>
 
-                <button type="submit" className="flex w-full justify-center rounded-md bg-orange-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Create Ticket</button>
+                <button
+                    type="submit"
+                    className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? (
+                        <>
+                            <FontAwesomeIcon icon={faSpinner} spin className="mr-2" /> Creating Ticket...
+                        </>
+                    ) : (
+                        "Create Ticket"
+                    )}
+                </button>
             </form>
         </div>
     );

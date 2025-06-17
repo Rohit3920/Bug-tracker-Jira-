@@ -1,48 +1,91 @@
-import React from 'react'
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 function TicketUI({ data }) {
-    return (
-        <article key={data.id} className="flex w-full max-h-47 min-h-45 max-w-xl overflow-hidden flex-col items-start justify-between border-1 p-3 border-gray-600 rounded-2xl hover:bg-blue-50">
-            <div className="flex w-fit items-center gap-x-4 text-xs">
-                <time className="text-gray-500">
-                    {data.createdAt}
-                </time>
-                {data.createAt}
-            </div>
-            <div className="w-full ">
-                <div className="px-3 py-1 float-right text-xs font-semibold mx-4 rounded-full bg-blue-100 text-blue-800 mb-1">
-                    <strong className="font-semibold">Status : </strong>
-                    {data.status}</div>
-            </div>
-            <div className="group relative">
-                <h3 className="mt-3 ml-4 text-lg/6 font-semibold text-gray-900 group-hover:text-gray-600">
-                    {data.title}
-                </h3>
-            </div>
-            <div className="relative mt-8 flex items-center gap-x-4">
-                <div className="text-sm/6">
-                    <div className="flex  [&>*]">
-                        <div className="text-gray-700 text-sm mx-4 mb-1">
-                            <strong className="font-semibold">Assignee : </strong>
-                            <ul className='flex flex-col'>
-                                {
-                                    data.assignee.map((res, ind) => {
-                                        return <li key={ind}>{res}</li>
-                                    })
-                                }
-                            </ul>
-                        </div>
+    const getStatusBadgeClasses = (status) => {
+        switch (status?.toLowerCase()) {
+            case 'open':
+            case 'to do':
+                return 'bg-blue-100 text-blue-800';
+            case 'in progress':
+                return 'bg-purple-100 text-purple-800';
+            case 'done':
+            case 'closed':
+                return 'bg-green-100 text-green-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
+        }
+    };
 
-                        <div className="text-gray-500 text-xs mx-4 mt-2 float-right">
-                            <strong className="font-semibold"></strong>
-                            {data.projectName}</div>
+    const getPriorityBadgeClasses = (priority) => {
+        switch (priority?.toLowerCase()) {
+            case 'high':
+                return 'bg-red-100 text-red-800';
+            case 'medium':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'low':
+                return 'bg-green-100 text-green-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    const formattedDate = data.createdAt
+        ? new Date(data.createdAt).toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        })
+        : 'N/A';
+
+    return (
+        <Link to={`/ticket/${data._id}`} className="block">
+            <article className="flex flex-col w-full min-h-45 p-4 border border-gray-300 rounded-lg shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-200 ease-in-out">
+                <div className="flex justify-between items-start mb-3">
+                    <div className="flex flex-col">
+                        <time dateTime={data.createdAt} className="text-sm text-gray-500">
+                            Created: {formattedDate}
+                        </time>
+
+                    </div>
+                    <div className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusBadgeClasses(data.status)}`}>
+                        {data.status || 'Unknown Status'}
                     </div>
                 </div>
-            </div>
-        </article>
-    )
+
+                <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700 leading-tight mb-2 truncate">
+                    {data.title || 'No Title'}
+                </h3>
+
+                <div className="mt-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-y-2 text-sm text-gray-700">
+                    <div>
+                        <strong className="font-semibold">Assignee(s): </strong>
+                        {data.assignee && data.assignee.length > 0 ? (
+                            <ul className='inline-flex flex-wrap gap-1 ml-1'>
+                                {data.assignee.map((assigneeId, index) => (
+                                    <li key={index} className="px-2 py-0.5 bg-gray-200 rounded-full text-xs font-medium">
+                                        {assigneeId}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <span>N/A</span>
+                        )}
+                    </div>
+                    <div className="flex items-center sm:ml-4">
+                        <strong className="font-semibold mr-1">Project: </strong>
+                        <span className="text-gray-800">{data.projectName || 'N/A'}</span>
+                    </div>
+                    <div className="flex items-center sm:ml-4">
+                        <strong className="font-semibold mr-1">Priority: </strong>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getPriorityBadgeClasses(data.priority)}`}>
+                            {data.priority || 'N/A'}
+                        </span>
+                    </div>
+                </div>
+            </article>
+        </Link>
+    );
 }
 
-export default TicketUI
-
-
+export default TicketUI;

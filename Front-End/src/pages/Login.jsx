@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 
 function Login() {
@@ -24,18 +25,19 @@ function Login() {
                 if (response.data.user) {
                     localStorage.setItem("User", JSON.stringify(response.data.user));
                     localStorage.setItem("token", JSON.stringify(response.data.token));
+                    toast.done("You are logged in successfully")
                     navigate("/");
                 }
             }).catch((error) => {
                 console.error("There was an error logging in!", error);
-                alert("Invalid credentials, please try again.");
+                toast.alert("Invalid credentials, please try again.");
             });
 
     }
 
 
     return (
-        <section  id='login'>
+        <section id='login'>
             <div className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
                 <form onSubmit={handleLogin} className=''>
                     <h1 className='text-sky-950 mb-4'>Login User</h1>

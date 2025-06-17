@@ -18,13 +18,13 @@ const ticketSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['open', 'to do', 'in progress', 'done'],
+        enum: ['open', 'to_do', 'in_progress', 'done'],
         default: 'open'
     },
-    assignee: {
+    assignee: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    },
+    }],
     projectId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Project',

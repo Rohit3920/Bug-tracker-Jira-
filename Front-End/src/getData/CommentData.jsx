@@ -1,19 +1,9 @@
-import axios from "axios";
+import { routeURL } from './ConstantVal'
 
-export async function NewComment(commentData) {
-    try {
-        const response = await axios.post(`http://localhost:5000/ticket/comment`, commentData);
-        console.log('Comment created successfully:', response.data);
-        return response.data;
-    } catch (error) {
-        console.error('Error creating comment:', error);
-        throw new Error('Failed to create comment. Please ensure your backend server is running.');
-    }
-}
 // /ticket/:id/history
 export async function fetchTicketComments(ticketId) {
     try {
-        const response = await fetch(`http://localhost:5000/ticket/comment-history/${ticketId}`);
+        const response = await fetch(`${routeURL}/ticket/comment-history/${ticketId}`);
 
         if (!response.ok) {
             const errorData = await response.json();
@@ -28,15 +18,3 @@ export async function fetchTicketComments(ticketId) {
         throw error; 
     }
 }
-
-// // Example usage:
-// const myTicketId = '666d40f25e76a6e9a0f2b3e8'; // Replace with an actual ticket ID
-// fetchTicketComments(myTicketId)
-//     .then(comments => {
-//         // Do something with the comments, e.g., update your React state
-//         console.log('Displaying comments:', comments);
-//     })
-//     .catch(error => {
-//         // Handle any errors that occurred during the fetch
-//         console.error('Failed to get comments:', error);
-//     });

@@ -1,41 +1,37 @@
-import { useState } from 'react'
-import axios from 'axios'
+import axios from 'axios';
+import { routeURL } from "./ConstantVal";
 
-export function UserData() {
-    const [users, setUsers] = useState([]);
-
-    try {
-        axios.get('http://localhost:5000/user')
-            .then((response) => {
-                setUsers(response.data);
-            })
-            .catch((error) => {
-                console.error('Error fetching user data:', error);
-            });
-    } catch (error) {
-        console.error('Error fetching user data:', error);
+const handleApiError = (error, defaultMessage) => {
+    console.error('API Error:', error.response ? error.response.data : error.message);
+    let errorMessage = defaultMessage;
+    if (error.response && error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+    } else if (error.message) {
+        errorMessage = error.message;
     }
+    throw new Error(errorMessage);
+};
 
-    return users;
+export async function UserData() {
+    try {
+        const response = await axios.get(`${routeURL}/user`);
+        console.log('Fetched all user data:', response.data);
+        return response.data;
+    } catch (error) {
+        handleApiError(error, 'Failed to load all users. Please ensure your backend server is running.');
+    }
 }
 
-export function UserDataById(id) {
-    const [user, setUser] = useState(null);
-
-    try {
-        axios.get(`http://localhost:5000/user/${id}`)
-            .then((response) => {
-                setUser(response.data);
-            })
-            .catch((error) => {
-                console.error('Error fetching user data by ID:', error);
-            });
-    } catch (error) {
-        console.error('Error fetching user data by ID:', error);
+export async function UserDataById(id) {
+    if (!id) {
+        throw new Error("User ID is required to fetch user data by ID.");
     }
-
-    return user ? user.title : "Unknown User";
+    try {
+        console.log('Fetching user data by ID:', id);
+        const response = await axios.get(`${routeURL}/user/${id}`);
+        console.log('Fetched user data by ID:', response.data);
+        return response.data;
+    } catch (error) {
+        handleApiError(error, `Failed to load user with ID: ${id}.`);
+    }
 }
-
-
-

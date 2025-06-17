@@ -19,8 +19,8 @@ function Sidebar() {
                 <Link to="/Ticket" className="block py-2 px-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors duration-200">
                     Tickets
                 </Link>
-                <Link to="/User" className="block py-2 px-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors duration-200">
-                    Users
+                <Link to='/profile/' className="block py-2 px-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors duration-200">
+                    My Profile
                 </Link>
             </nav>
         </aside>
