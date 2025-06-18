@@ -19,6 +19,7 @@ import ProgressBoard from './component/ProgressBoard/ProgressBoard'
 import TicketView from './component/ticket/TicketView'
 import UserProfile from './component/UserProfile'
 import AssignTicket from './component/ticket/AssignTicket'
+import Search from './component/Search'
 // import Sidebar from './component/DashboardCompo/sidebar'
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
               <Route path='/ticket/ticketDetail/' element={<TicketDetailPage />} />
 
               <Route path='/progress-report' element={<ProgressBoard />} />
+              <Route path='/search-project/' element={<Search />} />
             </Route>
 
             <Route path='/signup' element={<SignUp />} />

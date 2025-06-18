@@ -451,6 +451,45 @@ app.get('/ticket/comment-history/:ticketId', async (req, res) => {
         res.status(500).json({ message: "An unexpected error occurred while fetching comment history." });
     }
 });
+
+// ----------------seacrh routes -----------------
+app.get("/search-project/:key", async (req, resp) => {
+    let project = await Project.find({
+        "$or": [
+            { title: { $regex: req.params.key } },
+            { description : { $regex: req.params.key } },
+            { status: { $regex: req.params.key } },
+        ]
+    })
+    resp.send(project)
+})
+
+app.get("/search-ticket/:key", async (req, resp) => {
+    let ticket = await Ticket.find({
+        "$or": [
+            { title: { $regex: req.params.key } },
+            { description : { $regex: req.params.key } },
+            { status: { $regex: req.params.key } },
+            { priority: { $regex: req.params.key } },
+        ]
+    })
+    resp.send(ticket)
+})
+
+
+app.get("/search/:key", async (req, resp) => {
+    let ticket = await Ticket.find({
+        "$or": [
+            { title: { $regex: req.params.key } },
+            { description : { $regex: req.params.key } },
+            { status: { $regex: req.params.key } },
+            { category: { $regex: req.params.key } },
+            { projectId: { $regex: req.params.key } }
+        ]
+    })
+    resp.send(ticket)
+})
+
 http.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

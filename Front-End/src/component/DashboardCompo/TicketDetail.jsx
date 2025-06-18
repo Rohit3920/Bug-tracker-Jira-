@@ -1,13 +1,32 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { UserDataById } from '../../getData/UserData'; 
+import { useState, useEffect } from 'react';
 
 function TicketDetail({ ticket }) {
-
     const Navigate = useNavigate();
+    const [assign, setAssign] = useState([]);
 
     if (!ticket) {
         return <div className="text-center text-gray-500 p-4">No ticket data available.</div>;
     }
+
+    useEffect(() => {
+        if (ticket.assignee && ticket.assignee.length > 0) {
+            const fetchAssigneesPromises = ticket.assignee.map(id => UserDataById(id));
+
+            Promise.all(fetchAssigneesPromises)
+                .then(responses => {
+                    setAssign(responses);
+                })
+                .catch(err => {
+                    console.error("Error fetching assignee data:", err);
+                    setAssign([]);
+                });
+        } else {
+            setAssign([]);
+        }
+    }, [ticket.assignee]);
 
     const getPriorityColor = (priority) => {
         switch (priority.toLowerCase()) {
@@ -66,10 +85,10 @@ function TicketDetail({ ticket }) {
                 <div className="flex items-start col-span-full sm:col-span-1">
                     <span className="font-semibold text-gray-600 w-20">Assignee(s):</span>
                     <div className="flex flex-wrap gap-1">
-                        {ticket.assignee && ticket.assignee.length > 0 ? (
-                            ticket.assignee.map((assignee, index) => (
+                        {assign && assign.length > 0 ? (
+                            assign.map((assignee, index) => (
                                 <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-                                    {assignee}
+                                    {assignee.name || assignee.username || 'Unknown User'} {/* Display user's name or a fallback */}
                                 </span>
                             ))
                         ) : (
@@ -89,7 +108,6 @@ function TicketDetail({ ticket }) {
                         onClick={() => Navigate(`/ticket/assign-ticket/${ticket._id}`)}
                     >Assign Ticket</button>
                 </div>
-
             </div>
         </div>
     );
