@@ -20,7 +20,6 @@ import TicketView from './component/ticket/TicketView'
 import UserProfile from './component/UserProfile'
 import AssignTicket from './component/ticket/AssignTicket'
 import Search from './component/Search'
-// import Sidebar from './component/DashboardCompo/sidebar'
 
 function App() {
 
@@ -29,9 +28,6 @@ function App() {
       <div className="w-full">
         <Router>
           <Navbar />
-          {/* <div className="fixed h-screen md:w-50 bg-gray-800 shadow-md border-r border-gray-200">
-          <Sidebar />
-        </div> */}
           <div className="mb-10"></div>
 
           <Routes>
