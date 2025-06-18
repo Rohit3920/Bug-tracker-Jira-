@@ -17,7 +17,7 @@ const jwtKey = process.env.JWT_SECRET_KEY;
 
 //cors configuration
 var corsOptions = {
-    origin: "http://localhost:5173"
+    origin: "bug-tracker-jira-application.vercel.app"
 };
 app.use(cors(corsOptions));
 app.use(express.json());
