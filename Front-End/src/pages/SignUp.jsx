@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import axios from 'axios'
+import { routeURL } from "../getData/ConstantVal"
 
 function SignUp() {
     const [name, setName] = useState("")
@@ -13,7 +14,7 @@ function SignUp() {
         e.preventDefault();
         console.log(name, email, password, role);
 
-        axios.post('http://localhost:5000/register', { username: name, email, password, role })
+        axios.post(`${routeURL}/register`, { username: name, email, password, role })
             .then((response) => {
                 console.log("Response : ", response.data);
                 navigate("/login");

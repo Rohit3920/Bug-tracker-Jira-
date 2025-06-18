@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { routeURL } from "../getData/ConstantVal"
 
 
 function Login() {
@@ -19,7 +20,7 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        axios.post('http://localhost:5000/login', { email, password })
+        axios.post(`${routeURL}/login`, { email, password })
             .then((response) => {
                 console.log("Response : ", response.data);
                 if (response.data.user) {

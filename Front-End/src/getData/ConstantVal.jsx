@@ -1,4 +1,4 @@
-export const routeURL = 'http://localhost:5000';
+export const routeURL = 'bug-tracker-jira-application-qf6d.vercel.app'
 
 export const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
