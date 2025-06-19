@@ -139,7 +139,7 @@ function ProjectList() {
                 <div className="flex justify-between items-center mb-8">
                     <h1 className='text-4xl font-extrabold text-gray-900 flex items-center'>
                         <FontAwesomeIcon icon={faProjectDiagram} className="mr-3 text-blue-600" />
-                        My Projects
+                        Projects
                     </h1>
 
                     <div className="flex space-x-4">

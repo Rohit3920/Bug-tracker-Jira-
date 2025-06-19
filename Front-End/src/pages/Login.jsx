@@ -33,7 +33,6 @@ function Login() {
                 console.error("There was an error logging in!", error);
                 toast.alert("Invalid credentials, please try again.");
             });
-
     }
 
 

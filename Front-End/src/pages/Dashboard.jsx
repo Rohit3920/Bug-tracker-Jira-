@@ -42,7 +42,7 @@ function Dashboard() {
       <div className="fixed h-screen md:w-50 bg-gray-800 shadow-md border-r border-gray-200">
         <Sidebar />
       </div>
-      <main className="flex-1 ml-50 p-8 pb-16 md:p-8 overflow-y-auto">
+      <main className="flex-1 ml-2 md:ml-50 p-8 pb-16 md:p-8 overflow-y-auto">
         <Breadcrumbs parentName="Dashboard" parentRoute="/" currentName="Overview" />
         <h1 className="text-4xl font-extrabold text-gray-900 mb-8">Dashboard Overview</h1>
         <DashboardTicket ticket={tickets} />
