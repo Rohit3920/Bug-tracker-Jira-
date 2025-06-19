@@ -17,7 +17,7 @@ const jwtKey = process.env.JWT_SECRET_KEY;
 
 //cors configuration
 var corsOptions = {
-    origin: "https://bug-tracker-jira-application.vercel.app/",
+    origin: "https://bug-tracker-jira-application.vercel.app",
     methods: ["POST", "GET", "DELETE", "PUT"],
     Credential: true
 };
