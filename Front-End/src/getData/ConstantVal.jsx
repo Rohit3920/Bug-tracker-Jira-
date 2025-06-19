@@ -1,4 +1,4 @@
-export const routeURL = 'bug-tracker-jira-application-backen.vercel.app'
+export const routeURL = 'https://bug-tracker-jira-application-backen.vercel.app/'
 
 export const getAuthHeaders = () => {
     const token = localStorage.getItem('token');

@@ -17,7 +17,9 @@ const jwtKey = process.env.JWT_SECRET_KEY;
 
 //cors configuration
 var corsOptions = {
-    origin: "https://bug-tracker-jira-application-84ptp4ujh.vercel.app/"
+    origin: "https://bug-tracker-jira-application.vercel.app/",
+    methods: ["POST", "GET", "DELETE", "PUT"],
+    Credential: true
 };
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -457,7 +459,7 @@ app.get("/search-project/:key", async (req, resp) => {
     let project = await Project.find({
         "$or": [
             { title: { $regex: req.params.key } },
-            { description : { $regex: req.params.key } },
+            { description: { $regex: req.params.key } },
             { status: { $regex: req.params.key } },
         ]
     })
@@ -468,7 +470,7 @@ app.get("/search-ticket/:key", async (req, resp) => {
     let ticket = await Ticket.find({
         "$or": [
             { title: { $regex: req.params.key } },
-            { description : { $regex: req.params.key } },
+            { description: { $regex: req.params.key } },
             { status: { $regex: req.params.key } },
             { priority: { $regex: req.params.key } },
         ]
@@ -481,7 +483,7 @@ app.get("/search/:key", async (req, resp) => {
     let ticket = await Ticket.find({
         "$or": [
             { title: { $regex: req.params.key } },
-            { description : { $regex: req.params.key } },
+            { description: { $regex: req.params.key } },
             { status: { $regex: req.params.key } },
             { category: { $regex: req.params.key } },
             { projectId: { $regex: req.params.key } }
