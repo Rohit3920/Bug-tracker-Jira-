@@ -29,7 +29,7 @@ function ShowComments() {
                             <p className="font-semibold">
                                 {res.author}
                                 <small className="text-xs text-gray-500">
-                                    {res.userId} - {res.createdAt.split('T')[0]} {res.createdAt.split('T')[1].split('.')[0]}
+                                    {res.createdBy} - {res.createdAt.split('T')[0]} {res.createdAt.split('T')[1].split('.')[0]}
                                 </small>
                             </p>
                             <p>{res.text}</p>

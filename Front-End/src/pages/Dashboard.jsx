@@ -13,6 +13,8 @@ function Dashboard() {
   const [projects, setProjects] = React.useState([])
   const [tickets, setTieckts] = React.useState([])
 
+  const myData = JSON.parse(localStorage.getItem('User'))
+
   useEffect(() => {
     ProjectData()
       .then((response) => {
@@ -45,7 +47,7 @@ function Dashboard() {
       <main className="flex-1 ml-2 md:ml-50 p-8 pb-16 md:p-8 overflow-y-auto">
         <Breadcrumbs parentName="Dashboard" parentRoute="/" currentName="Overview" />
         <h1 className="text-4xl font-extrabold text-gray-900 mb-8">Dashboard Overview</h1>
-        <DashboardTicket ticket={tickets} />
+        <DashboardTicket ticket={tickets} myData={myData} />
 
         <DashboardProjects projects={projects} />
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserDataById } from '../../getData/UserData'; 
+import { UserDataById } from '../../getData/UserData';
 import { useState, useEffect } from 'react';
 
-function TicketDetail({ ticket }) {
+function TicketDetail({ ticket, myData }) {
     const Navigate = useNavigate();
     const [assign, setAssign] = useState([]);
 
@@ -88,7 +88,7 @@ function TicketDetail({ ticket }) {
                         {assign && assign.length > 0 ? (
                             assign.map((assignee, index) => (
                                 <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-                                    {assignee.name || assignee.username || 'Unknown User'} {/* Display user's name or a fallback */}
+                                    {assignee.name || assignee.username || 'Unknown User'}
                                 </span>
                             ))
                         ) : (
@@ -96,20 +96,26 @@ function TicketDetail({ ticket }) {
                         )}
                     </div>
                 </div>
-
-                <div className="w-full px-auto">
-                    <button className="w-full mr-5 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md"
-                        onClick={() => Navigate(`/ticket/update-ticket/${ticket._id}`)}
-                    >Update Ticket</button>
-                </div>
-
-                <div className="w-full px-auto">
-                    <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md"
-                        onClick={() => Navigate(`/ticket/assign-ticket/${ticket._id}`)}
-                    >Assign Ticket</button>
-                </div>
+                {
+                    myData._id === ticket.createdBy || myData.role === 'admin' ?
+                        <div className="w-full px-auto">
+                            <button className="w-full mr-5 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md"
+                                onClick={() => Navigate(`/ticket/update-ticket/${ticket._id}`)}
+                            >Update Ticket</button>
+                        </div>
+                        : <></>
+                }
+                {
+                    myData.role === 'admin' ?
+                        <div className="w-full px-auto">
+                            <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md"
+                                onClick={() => Navigate(`/ticket/assign-ticket/${ticket._id}`)}
+                            >Assign Ticket</button>
+                        </div>
+                        : <></>
+                }
             </div>
-        </div>
+        </div >
     );
 }
 

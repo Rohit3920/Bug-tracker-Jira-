@@ -42,7 +42,7 @@ const TicketForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        toast.dismiss(); // Dismiss any existing toasts
+        toast.dismiss();
 
         if (!title || !description || !projectId) {
             toast.error('Please fill in all required fields (Title, Description, Project).');
@@ -54,10 +54,7 @@ const TicketForm = () => {
             title,
             description,
             priority,
-            // Removed 'assignee: []' as it's not being set by the form and
-            // your schema expects a single ObjectId or null.
-            // If you need an assignee, you would add a field for it in the form
-            // and populate it here with a valid User ObjectId.
+            createdBy : JSON.parse( localStorage.getItem( "User" ) )._id,
             status: "open", // Default status from schema, can be omitted if not needed for submission
             projectId,
         };
@@ -69,16 +66,11 @@ const TicketForm = () => {
             toast.success("Ticket created successfully!");
             console.log("Ticket creation response:", response);
 
-            // Clear the form fields after successful submission
             setTitle("");
             setDescription("");
             setPriority("medium");
-            // Note: ProjectId is usually left selected or reset based on UX
-            // setProjectId(projects.length > 0 ? projects[0]._id : ""); // Optionally reset to first project or empty
         } catch (error) {
             console.error("Error submitting ticket:", error);
-            // The handleApiError in createTicket already throws an error with a message
-            // so we can directly use error.message here.
             toast.error(error.message || "There was an error creating the ticket!");
         } finally {
             setIsSubmitting(false);

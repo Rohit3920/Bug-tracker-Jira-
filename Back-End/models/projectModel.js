@@ -21,6 +21,11 @@ const projectSchema = new mongoose.Schema({
             ref: 'User'
         }
     ],
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        require : true
+    },
     createdAt: {
         type: Date,
         default: Date.now

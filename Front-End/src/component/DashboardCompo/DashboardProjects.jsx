@@ -2,7 +2,7 @@
 import ProjectContent from '../project/ProjectContent';
 import TicketDetail from '../ticket/TicketDetail'
 
-function DashboardProjects({ projects }) {
+function DashboardProjects({ projects, myData }) {
     console.log("Projects in DashboardProjects:", projects);
     return (
         <section className="mb-8">
@@ -10,7 +10,7 @@ function DashboardProjects({ projects }) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {projects.map(project => (
 
-                        <ProjectContent project={project}/>
+                        <ProjectContent project={project} myData={myData}/>
 
                 ))}
             </div>

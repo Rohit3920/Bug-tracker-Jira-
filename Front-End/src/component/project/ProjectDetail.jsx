@@ -14,6 +14,8 @@ const ProjectDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+      const myData = JSON.parse(localStorage.getItem('User'))
+
     const fetchProjectDetails = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -178,11 +180,15 @@ const ProjectDetail = () => {
                                     <FontAwesomeIcon icon={faTicketAlt} className="mr-2" />Show Tickets
                                 </button>
                             </Link>
-                            <Link to={`/project/update-Project/${project._id}`}>
+                            {
+                                myData._id === project._id || myData.role == 'admin' ?
+                                <Link to={`/project/update-Project/${project._id}`}>
                                 <button className='bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-md transition-colors duration-200 flex items-center'>
                                     <FontAwesomeIcon icon={faEdit} className="mr-2" />Edit Project
                                 </button>
                             </Link>
+                            :<> </>
+                            }
                         </div>
                     </div>
                 </div>

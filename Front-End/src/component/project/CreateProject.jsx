@@ -27,6 +27,7 @@ function CreateProject() {
             title,
             description,
             status,
+            createdBy : JSON.parse( localStorage.getItem( "User" ) )._id,
             createdAt: new Date(),
         };
 

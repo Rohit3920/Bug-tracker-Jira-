@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt, faEdit, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
-function ProjectContent({ project, onDelete }) {
+function ProjectContent({ project, onDelete, myData }) {
     if (!project) {
         return (
             <div className="text-center text-gray-500 p-4">
@@ -11,6 +11,10 @@ function ProjectContent({ project, onDelete }) {
             </div>
         );
     }
+
+    const myID = myData ? myData._id : JSON.parse(localStorage.getItem('User'))._id
+    const myRole = myData ? myData.role : JSON.parse(localStorage.getItem('User')).role
+
 
     const getStatusColor = (status) => {
         switch (status.toLowerCase()) {
@@ -81,13 +85,19 @@ function ProjectContent({ project, onDelete }) {
                     </button>
                 </Link>
 
-                <Link to={`/project/update-Project/${project._id}`}>
-                    <button
-                        className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded-md text-sm transition duration-200 flex items-center"
-                    >
-                        <FontAwesomeIcon icon={faEdit} className="mr-1" /> Edit
-                    </button>
-                </Link>
+                {
+                    myID === project.createdBy || myRole === 'admin' ?
+                        <Link to={`/project/update-Project/${project._id}`}>
+                            <button
+                                className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded-md text-sm transition duration-200 flex items-center"
+                            >
+                                <FontAwesomeIcon icon={faEdit} className="mr-1" /> Edit
+                            </button>
+                        </Link>
+                        : <></>
+
+
+                }
 
                 {onDelete && (
                     <button

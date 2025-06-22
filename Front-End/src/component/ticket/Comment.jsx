@@ -17,7 +17,9 @@ function Comment() {
 
     const user = localStorage.getItem('User');
     const userId = user ? JSON.parse(user)._id : null;
-    const userName = user ? JSON.parse(user).name : 'Guest';
+    const userName = user ? JSON.parse(user).username : 'Guest';
+
+    console.log(userId, userName)
 
     const ticketIdentifier = paramTicketId;
 
@@ -66,8 +68,8 @@ function Comment() {
             const newCommentData = {
                 text: commentText.trim(),
                 userId,
-                userName,
                 ticketId: ticketIdentifier,
+                createdBy : userName,
                 createdAt: new Date().toISOString(),
             };
 
@@ -139,9 +141,7 @@ function Comment() {
                 </div>
             ) : (
                 <div className="space-y-4">
-                    {comments.map(comment => (
-                        <ShowComments key={comment._id} comment={comment} />
-                    ))}
+                        <ShowComments key={comments._id} comment={comments} />
                 </div>
             )}
         </div>
